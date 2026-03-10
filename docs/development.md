@@ -9,8 +9,8 @@ pip install -e ".[dev]"
 # Run tests
 pytest
 
-# Run the converter
-python -m sinapsi_converter assets/RAW_report_1703_2026-03-02_08-29.csv
+# Run the converter (use any Sinapsi RAW report CSV)
+python -m sinapsi_converter path/to/RAW_report.csv
 ```
 
 ## Project Structure
@@ -22,11 +22,13 @@ src/sinapsi_converter/
   models.py            # Data classes (no I/O, no logic)
   parser.py            # CSV parsing: raw text -> data models
   sorter.py            # Sorting/grouping for both output sheets
+  styles.py            # XLSX formatting: fonts, fills, borders, row heights
   writer.py            # XLSX generation with openpyxl
 tests/
+  fixtures/            # Anonymized test CSV
   test_parser.py       # CSV parsing tests
   test_sorter.py       # Sorting/grouping tests
-  test_writer.py       # XLSX output tests
+  test_writer.py       # XLSX output tests (content + formatting)
 ```
 
 ### Module Responsibilities
@@ -42,8 +44,12 @@ tests/
   sheets. Raw sheet: group by apartment, sort by count. Pivot: alphabetical
   grouping with subtotals, deduplicates devices with same name.
 
+- **styles.py**: Reusable XLSX formatting. Aptos Narrow font, dark/accent
+  fills, alternating rows, auto-fit columns, freeze panes, row heights.
+  Called by `writer.py` — no direct I/O.
+
 - **writer.py**: Takes sorted data, builds XLSX with openpyxl. Two sheets:
-  raw data (with SUM formulas) and PIVOT summary.
+  raw data (with SUM formulas, auto-filter) and PIVOT summary.
 
 - **__main__.py**: Wires everything together. Handles CLI args and
   drag-and-drop. This is the ONLY module that changes when swapping UI

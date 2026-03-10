@@ -59,7 +59,7 @@ tests/
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --name sinapsi-converter src/sinapsi_converter/__main__.py
+pyinstaller --onefile --paths src --name sinapsi-converter scripts/pyinstaller_entry.py
 ```
 
 The .exe will be in `dist/sinapsi-converter.exe`.

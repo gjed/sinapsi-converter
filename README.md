@@ -27,7 +27,7 @@ Build a standalone executable for non-technical users:
 
 ```bash
 pip install -e ".[dev]"
-pyinstaller --onefile --name sinapsi-converter src/sinapsi_converter/__main__.py
+pyinstaller --onefile --paths src --name sinapsi-converter scripts/pyinstaller_entry.py
 ```
 
 The `.exe` lands in `dist/`. Users drag a CSV onto it — the XLSX appears next to the CSV.

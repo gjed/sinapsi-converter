@@ -10,8 +10,18 @@ from __future__ import annotations
 from pathlib import Path
 
 from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from .models import ConcentratorDevice, HCADevice, ParsedReport, PivotGroup
+from .styles import (
+    apply_data_row_style,
+    apply_header_style,
+    apply_pivot_group_style,
+    apply_pivot_total_style,
+    apply_subheader_style,
+    auto_fit_columns,
+    freeze_at_row,
+)
 
 
 # Column headers for the file metadata section
@@ -117,9 +127,12 @@ def _write_raw_sheet(
     sorted_hca: list[HCADevice],
 ) -> None:
     """Write the raw data sheet."""
+    max_col = len(_HCA_HEADERS)  # 19 — widest section
+
     # Row 1: File header labels
     for col, header in enumerate(_FILE_HEADERS, 1):
         ws.cell(row=1, column=col, value=header)
+    apply_header_style(ws, row=1, max_col=len(_FILE_HEADERS))
 
     # Row 2: File header values
     h = report.header
@@ -136,8 +149,9 @@ def _write_raw_sheet(
     ]
     for col, val in enumerate(row2_values, 1):
         ws.cell(row=2, column=col, value=val)
+    apply_data_row_style(ws, row=2, max_col=len(_FILE_HEADERS), alternate=False)
 
-    # Row 3: blank
+    # Row 3: blank (separator between file header and concentrators)
     current_row = 4
 
     # Write concentrator devices (each with its own header row)
@@ -145,28 +159,43 @@ def _write_raw_sheet(
         # Header row
         for col, header in enumerate(_CONCENTRATOR_HEADERS, 1):
             ws.cell(row=current_row, column=col, value=header)
+        apply_subheader_style(ws, row=current_row, max_col=len(_CONCENTRATOR_HEADERS))
         current_row += 1
 
         # Data row
         _write_concentrator_row(ws, current_row, conc)
+        apply_data_row_style(
+            ws, row=current_row, max_col=len(_CONCENTRATOR_HEADERS), alternate=False
+        )
         current_row += 1
 
-        # Blank row
+        # Blank row after each concentrator
         current_row += 1
+
+    # Blank row separating concentrators from HCA section
+    current_row += 1
 
     # Sub-headers for HCA section
-    ws.cell(row=current_row - 1, column=13, value="Attuale")
-    ws.cell(row=current_row - 1, column=14, value="Es.Prec")
+    subheader_row = current_row
+    ws.cell(row=subheader_row, column=13, value="Attuale")
+    ws.cell(row=subheader_row, column=14, value="Es.Prec")
+    apply_subheader_style(ws, row=subheader_row, max_col=max_col)
+    current_row += 1
 
     # HCA column headers
+    hca_header_row = current_row
     for col, header in enumerate(_HCA_HEADERS, 1):
         ws.cell(row=current_row, column=col, value=header)
+    apply_header_style(ws, row=current_row, max_col=max_col)
     current_row += 1
 
     # HCA device rows
     first_hca_row = current_row
-    for device in sorted_hca:
+    for idx, device in enumerate(sorted_hca):
         _write_hca_row(ws, current_row, device)
+        apply_data_row_style(
+            ws, row=current_row, max_col=max_col, alternate=(idx % 2 == 1)
+        )
         current_row += 1
 
     # SUM formulas row (totals for HCA columns)
@@ -175,6 +204,15 @@ def _write_raw_sheet(
         col_letter = chr(ord("A") + col - 1)
         formula = f"=SUM({col_letter}{first_hca_row}:{col_letter}{last_hca_row})"
         ws.cell(row=current_row, column=col, value=formula)
+    apply_subheader_style(ws, row=current_row, max_col=max_col)
+
+    # Auto-filter on the HCA table (header row through last data row)
+    last_col_letter = get_column_letter(max_col)
+    ws.auto_filter.ref = f"A{hca_header_row}:{last_col_letter}{last_hca_row}"
+
+    # Auto-fit and freeze panes below the HCA header row
+    auto_fit_columns(ws)
+    freeze_at_row(ws, row=hca_header_row + 1)
 
 
 def _write_concentrator_row(ws, row: int, device: ConcentratorDevice) -> None:
@@ -236,27 +274,41 @@ def _try_numeric(value: str) -> int | str:
 
 def _write_pivot_sheet(ws, pivot_groups: list[PivotGroup]) -> None:
     """Write the PIVOT summary sheet."""
+    max_col = 2
+
     # Row 3: Headers (rows 1-2 are intentionally blank, matching the sample)
     ws.cell(row=3, column=1, value="Etichette di riga")
     ws.cell(row=3, column=2, value="Somma di HCA")
+    apply_header_style(ws, row=3, max_col=max_col)
 
     current_row = 4
     grand_total = 0.0
+    device_idx = 0  # running counter for alternating rows across all groups
 
     for group in pivot_groups:
         # Apartment subtotal row
         ws.cell(row=current_row, column=1, value=group.apartment)
         ws.cell(row=current_row, column=2, value=int(group.total))
+        apply_pivot_group_style(ws, row=current_row, max_col=max_col)
         current_row += 1
 
         # Individual device rows
         for name, hca in group.devices:
             ws.cell(row=current_row, column=1, value=name)
             ws.cell(row=current_row, column=2, value=int(hca))
+            apply_data_row_style(
+                ws, row=current_row, max_col=max_col, alternate=(device_idx % 2 == 1)
+            )
             current_row += 1
+            device_idx += 1
 
         grand_total += group.total
 
     # Grand total row
     ws.cell(row=current_row, column=1, value="Totale complessivo")
     ws.cell(row=current_row, column=2, value=int(grand_total))
+    apply_pivot_total_style(ws, row=current_row, max_col=max_col)
+
+    # Auto-fit and freeze panes below the header row
+    auto_fit_columns(ws)
+    freeze_at_row(ws, row=4)

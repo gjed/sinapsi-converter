@@ -189,3 +189,97 @@ def test_raw_sheet_sum_formulas():
         # Column M (13) should have a SUM formula
         val = ws.cell(row=last_row, column=13).value
         assert val is not None and "SUM" in str(val)
+
+
+# -- Style tests ---------------------------------------------------------------
+
+
+def _write_test_workbook():
+    """Helper: write workbook and return opened sheets."""
+    report, sorted_hca, pivot_groups = _make_report()
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "test.xlsx"
+        write_xlsx(report, sorted_hca, pivot_groups, out)
+        wb = openpyxl.load_workbook(out)
+        yield wb
+        wb.close()
+
+
+def test_pivot_header_has_dark_fill():
+    """PIVOT header row should have dark blue background and bold white text."""
+    for wb in _write_test_workbook():
+        ws = wb["PIVOT "]
+        cell = ws.cell(row=3, column=1)
+        assert cell.font.bold is True
+        assert cell.fill.start_color.rgb == "002F5496"
+        assert cell.font.color.rgb == "00FFFFFF"
+
+
+def test_pivot_apartment_total_has_accent_fill():
+    """PIVOT apartment total rows should be light blue and bold."""
+    for wb in _write_test_workbook():
+        ws = wb["PIVOT "]
+        cell = ws.cell(row=4, column=1)
+        assert cell.font.bold is True
+        assert cell.fill.start_color.rgb == "00D6E4F0"
+
+
+def test_pivot_grand_total_has_dark_fill():
+    """PIVOT grand total row should have dark blue background and bold white text."""
+    for wb in _write_test_workbook():
+        ws = wb["PIVOT "]
+        last_row = ws.max_row
+        cell = ws.cell(row=last_row, column=1)
+        assert cell.value == "Totale complessivo"
+        assert cell.font.bold is True
+        assert cell.fill.start_color.rgb == "002F5496"
+
+
+def test_pivot_freeze_panes():
+    """PIVOT sheet should freeze panes at A4."""
+    for wb in _write_test_workbook():
+        ws = wb["PIVOT "]
+        assert str(ws.freeze_panes) == "A4"
+
+
+def test_raw_header_has_dark_fill():
+    """RAW file header row should have dark blue background."""
+    for wb in _write_test_workbook():
+        ws = wb[wb.sheetnames[1]]
+        cell = ws.cell(row=1, column=1)
+        assert cell.font.bold is True
+        assert cell.fill.start_color.rgb == "002F5496"
+
+
+def test_raw_hca_header_has_dark_fill():
+    """RAW HCA column header row should have dark blue background."""
+    for wb in _write_test_workbook():
+        ws = wb[wb.sheetnames[1]]
+        # With 1 concentrator: rows 4-6 (header/data/blank), row 9 subheader,
+        # row 10 HCA header. But our data has row structure:
+        # 1=file header, 2=file data, 3=blank, 4=conc header, 5=conc data,
+        # 6=blank, 7=subheader (Attuale/Es.Prec), 8=HCA header, 9+=HCA data
+        # Find the HCA header row by looking for "count" with dark fill
+        for row in range(4, ws.max_row + 1):
+            cell = ws.cell(row=row, column=1)
+            if cell.value == "count" and cell.fill.start_color.rgb == "002F5496":
+                # Found the HCA header row with dark fill
+                assert cell.font.bold is True
+                return
+        raise AssertionError("No HCA header row with dark fill found")
+
+
+def test_raw_freeze_panes():
+    """RAW sheet should have freeze panes set."""
+    for wb in _write_test_workbook():
+        ws = wb[wb.sheetnames[1]]
+        assert ws.freeze_panes is not None
+
+
+def test_raw_columns_auto_fitted():
+    """RAW sheet columns should have non-default widths (auto-fitted)."""
+    for wb in _write_test_workbook():
+        ws = wb[wb.sheetnames[1]]
+        # Column A should be wider than default (8) since it has content
+        width_a = ws.column_dimensions["A"].width
+        assert width_a is not None and width_a > 8

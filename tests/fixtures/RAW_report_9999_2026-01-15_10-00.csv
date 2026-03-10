@@ -1,0 +1,38 @@
+﻿Nome file;Data Report;Ora Report;Riferimento impianto;Descrizione;Totale dispositivi cablati;Totale dispositivi wireless;Totale dispositivi non ricevuti;Totale concentratori
+RAW_report_9999_2026-01-15_10-00;2026-01-15;10:00;CONDOMINIO GARIBALDI;via garibaldi 42;0;10;1;2
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired|1=wireless|2=smart gateway;model_id;readout_date;readout_time;communication_status
+0;;GW00110001;GW00110001;;via garibaldi 42;;2-GW00110001;SIN.EQRPT868XM;2026-01-15;09:55:00;Ok
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired|1=wireless|2=smart gateway;model_id;readout_date;readout_time;communication_status
+1;;GW00220002;GW00220002;;via garibaldi 42;;2-GW00220002;SIN.EQRPT868XM;2026-01-15;09:56:00;Errore di comunicazione
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+2;;30001001;ROSSI BAGNO;1 ROSSI INT 1 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:00:00;Ok;118,00;525,00;31/10/2025;95,00;31/12/2025;31/MM/yy;15/01/2026 10:00
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+3;;30001002;ROSSI CAMERA;1 ROSSI INT 1 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:01:00;Ok;200,00;410,00;31/10/2025;180,00;31/12/2025;31/MM/yy;15/01/2026 10:01
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+4;;30001003;ROSSI CUCINA;1 ROSSI INT 1 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:02:00;Ok;75,00;300,00;31/10/2025;60,00;31/12/2025;31/MM/yy;15/01/2026 10:02
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+5;;30002001;BIANCHI BAGNO;2 BIANCHI INT 2 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:03:00;Ok;90,00;380,00;31/10/2025;70,00;31/12/2025;31/MM/yy;15/01/2026 10:03
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+6;;30002002;BIANCHI CAMERA;2 BIANCHI INT 2 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:04:00;Ok;150,00;620,00;31/10/2025;130,00;31/12/2025;31/MM/yy;15/01/2026 10:04
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+7;;30002003;BIANCHI SALOTTO;2 BIANCHI INT 2 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:05:00;Errore permanente | Errore temporaneo;0,00;0,00;31/10/2025;0,00;31/12/2025;31/MM/yy;15/01/2026 10:05
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+8;;30003001;VERDI BAGNO;3 VERDI INT 3 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:06:00;Ok;55,00;210,00;31/10/2025;45,00;31/12/2025;31/MM/yy;15/01/2026 10:06
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+9;;30003002;VERDI CAMERA;3 VERDI INT 3 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:07:00;Ok;85,00;340,00;31/10/2025;70,00;31/12/2025;31/MM/yy;15/01/2026 10:07
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+10;;30003003;VERDI CAMERA;3 VERDI INT 3 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:08:00;Ok;40,00;160,00;31/10/2025;30,00;31/12/2025;31/MM/yy;15/01/2026 10:08
+;
+count;primary_address;device_serial_number;name_device;device_description;device_detail;device_measure_hex;0=wired M1M2|1=wireless;model_id;readout_date;readout_time;communication_status;HCA;HCA;DATE;HCA;DATE;DATE;DATE_TIME
+11;;30003004;VERDI CUCINA;3 VERDI INT 3 civ 42 ;via garibaldi 42;08|UDR;;6251;2026-01-15;10:09:00;Ok;65,00;270,00;31/10/2025;50,00;31/12/2025;31/MM/yy;15/01/2026 10:09

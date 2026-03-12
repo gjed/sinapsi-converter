@@ -58,13 +58,40 @@ def test_sort_by_description_within_same_detail():
 
 
 def test_pivot_groups_alphabetical():
-    """Pivot groups should be sorted alphabetically by apartment."""
+    """Pivot groups should be sorted alphabetically by apartment within same detail."""
     devices = [
-        _make_device(1, "Room", "2 BBB", hca=10.0),
-        _make_device(2, "Room", "1 AAA", hca=20.0),
+        _make_device(1, "Room", "2 BBB", hca=10.0, detail="X"),
+        _make_device(2, "Room", "1 AAA", hca=20.0, detail="X"),
     ]
     groups = build_pivot_groups(devices)
     assert [g.apartment for g in groups] == ["1 AAA", "2 BBB"]
+
+
+def test_pivot_groups_carry_detail():
+    """Each pivot group should carry its device_detail value."""
+    devices = [
+        _make_device(1, "Room", "1 APT A", hca=10.0, detail="Via Z, 1"),
+        _make_device(2, "Room", "2 APT B", hca=20.0, detail="Via A, 5"),
+    ]
+    groups = build_pivot_groups(devices)
+    details = {g.apartment: g.detail for g in groups}
+    assert details["1 APT A"] == "Via Z, 1"
+    assert details["2 APT B"] == "Via A, 5"
+
+
+def test_pivot_groups_sorted_detail_descending():
+    """Pivot groups should be sorted by detail descending, then apartment ascending."""
+    devices = [
+        _make_device(1, "Room", "1 APT A", hca=10.0, detail="Via Z, 1"),
+        _make_device(2, "Room", "2 APT B", hca=20.0, detail="Via A, 5"),
+        _make_device(3, "Room", "3 APT C", hca=30.0, detail="Via Z, 1"),
+    ]
+    groups = build_pivot_groups(devices)
+    assert [(g.detail, g.apartment) for g in groups] == [
+        ("Via Z, 1", "1 APT A"),
+        ("Via Z, 1", "3 APT C"),
+        ("Via A, 5", "2 APT B"),
+    ]
 
 
 def test_pivot_devices_alphabetical():

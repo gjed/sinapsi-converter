@@ -32,36 +32,38 @@ def sort_for_raw_sheet(devices: list[HCADevice]) -> list[HCADevice]:
 def build_pivot_groups(devices: list[HCADevice]) -> list[PivotGroup]:
     """Build pivot groups from HCA devices.
 
-    Groups devices by apartment (device_description), calculates subtotals,
-    and sorts alphabetically.
+    Groups devices by (device_detail, device_description), calculates subtotals.
+    Sorted by device_detail descending, then device_description ascending —
+    matching the raw sheet order.
 
     Args:
         devices: List of HCA devices (any order).
 
     Returns:
-        List of PivotGroup, sorted alphabetically by apartment.
+        List of PivotGroup, sorted by detail descending then apartment ascending.
     """
-    # First level: group by apartment
-    apartment_map: dict[str, dict[str, float]] = {}
+    # Group by (detail, apartment)
+    key_map: dict[tuple[str, str], dict[str, float]] = {}
 
     for device in devices:
-        apartment = device.description
-        if apartment not in apartment_map:
-            apartment_map[apartment] = {}
-        # Sum HCA values for devices with the same name within an apartment
-        # (handles duplicate serial numbers for the same logical device)
+        key = (device.detail, device.description)
+        if key not in key_map:
+            key_map[key] = {}
         name = device.name
-        apartment_map[apartment][name] = (
-            apartment_map[apartment].get(name, 0.0) + device.hca_current
-        )
+        key_map[key][name] = key_map[key].get(name, 0.0) + device.hca_current
+
+    # Sort: detail descending, apartment ascending (two-pass stable sort)
+    sorted_by_apartment = sorted(key_map.keys(), key=lambda k: k[1])
+    sorted_keys = sorted(sorted_by_apartment, key=lambda k: k[0], reverse=True)
 
     groups: list[PivotGroup] = []
-    for apartment in sorted(apartment_map.keys()):
-        device_entries = sorted(apartment_map[apartment].items())
+    for detail, apartment in sorted_keys:
+        device_entries = sorted(key_map[(detail, apartment)].items())
         total = sum(hca for _, hca in device_entries)
         groups.append(
             PivotGroup(
                 apartment=apartment,
+                detail=detail,
                 devices=device_entries,
                 total=total,
             )

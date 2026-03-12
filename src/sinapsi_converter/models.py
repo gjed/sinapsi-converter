@@ -77,6 +77,7 @@ class PivotGroup:
     """A group of devices for one apartment in the pivot table."""
 
     apartment: str  # device_description, e.g. "1 GUERRESCHI INT 1 civ 7 "
+    detail: str = ""  # device_detail, used for ordering
     devices: list[tuple[str, float]] = field(
         default_factory=list
     )  # (name, hca_current)

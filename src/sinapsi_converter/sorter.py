@@ -15,8 +15,8 @@ from .models import HCADevice, PivotGroup
 def sort_for_raw_sheet(devices: list[HCADevice]) -> list[HCADevice]:
     """Sort HCA devices for the raw data sheet.
 
-    Sorts by device_detail first, then by device_description within each
-    detail group.
+    Sorts by device_detail descending first, then by device_description
+    ascending within each detail group.
 
     Args:
         devices: Unsorted list of HCA devices.
@@ -24,7 +24,9 @@ def sort_for_raw_sheet(devices: list[HCADevice]) -> list[HCADevice]:
     Returns:
         Sorted list ready for the raw sheet.
     """
-    return sorted(devices, key=lambda d: (d.detail, d.description))
+    # Two-pass stable sort: secondary key first, then primary key reversed
+    by_description = sorted(devices, key=lambda d: d.description)
+    return sorted(by_description, key=lambda d: d.detail, reverse=True)
 
 
 def build_pivot_groups(devices: list[HCADevice]) -> list[PivotGroup]:

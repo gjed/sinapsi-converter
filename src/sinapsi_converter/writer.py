@@ -211,11 +211,11 @@ def _write_raw_sheet(
     last_col_letter = get_column_letter(max_col)
     ws.auto_filter.ref = f"A{hca_header_row}:{last_col_letter}{last_hca_row}"
 
-    # Sort state: primary = device_detail (col F=6), secondary = device_description (col E=5)
+    # Sort state: primary = device_detail (col F) descending, secondary = device_description (col E) ascending
     ws.auto_filter.sortState = SortState(
         ref=f"A{first_hca_row}:{last_col_letter}{last_hca_row}",
         sortCondition=[
-            SortCondition(ref=f"F{first_hca_row}:F{last_hca_row}"),
+            SortCondition(ref=f"F{first_hca_row}:F{last_hca_row}", descending=True),
             SortCondition(ref=f"E{first_hca_row}:E{last_hca_row}"),
         ],
     )

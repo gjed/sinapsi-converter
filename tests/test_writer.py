@@ -277,18 +277,21 @@ def test_raw_freeze_panes():
 
 
 def test_raw_autofilter_has_sort_state():
-    """RAW sheet autofilter should have sort state on device_detail (col F) then device_description (col E)."""
+    """RAW sheet autofilter should sort by device_detail (col F) descending, then device_description (col E) ascending."""
     for wb in _write_test_workbook():
         ws = wb[wb.sheetnames[1]]
         sort_state = ws.auto_filter.sortState
         assert sort_state is not None, "autofilter has no sortState"
-        refs = [sc.ref for sc in sort_state.sortCondition]
-        # First sort key: column F (device_detail)
+        conditions = sort_state.sortCondition
+        refs = [sc.ref for sc in conditions]
+        # First sort key: column F (device_detail) — descending
         assert any(r.startswith("F") for r in refs), f"No sort on column F, got: {refs}"
-        # Second sort key: column E (device_description)
-        assert any(r.startswith("E") for r in refs), f"No sort on column E, got: {refs}"
-        # F must come before E
         f_idx = next(i for i, r in enumerate(refs) if r.startswith("F"))
+        assert conditions[f_idx].descending is True, (
+            "device_detail (F) must sort descending"
+        )
+        # Second sort key: column E (device_description) — ascending
+        assert any(r.startswith("E") for r in refs), f"No sort on column E, got: {refs}"
         e_idx = next(i for i, r in enumerate(refs) if r.startswith("E"))
         assert f_idx < e_idx, (
             "device_detail (F) must be primary sort, device_description (E) secondary"

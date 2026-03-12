@@ -91,7 +91,7 @@ def test_pivot_totals():
 
 
 def test_sort_by_detail_then_description():
-    """Devices should be sorted first by detail, then by description."""
+    """Devices should be sorted first by detail descending, then by description ascending."""
     devices = [
         _make_device(1, "R", "2 APT B", detail="Scala B"),
         _make_device(2, "R", "1 APT A", detail="Scala B"),
@@ -99,21 +99,21 @@ def test_sort_by_detail_then_description():
     ]
     result = sort_for_raw_sheet(devices)
     assert [(d.detail, d.description) for d in result] == [
-        ("Scala A", "3 APT C"),
         ("Scala B", "1 APT A"),
         ("Scala B", "2 APT B"),
+        ("Scala A", "3 APT C"),
     ]
 
 
 def test_sort_detail_primary_over_description():
-    """detail ordering takes priority over description ordering."""
+    """detail descending ordering takes priority over description ordering."""
     devices = [
-        _make_device(1, "R", "1 APT A", detail="Z detail"),
-        _make_device(2, "R", "9 APT Z", detail="A detail"),
+        _make_device(1, "R", "1 APT A", detail="A detail"),
+        _make_device(2, "R", "9 APT Z", detail="Z detail"),
     ]
     result = sort_for_raw_sheet(devices)
-    assert result[0].detail == "A detail"
-    assert result[1].detail == "Z detail"
+    assert result[0].detail == "Z detail"
+    assert result[1].detail == "A detail"
 
 
 def test_pivot_deduplicates_by_name():

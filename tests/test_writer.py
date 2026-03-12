@@ -99,6 +99,7 @@ def _make_report() -> tuple[ParsedReport, list[HCADevice], list[PivotGroup]]:
     pivot_groups = [
         PivotGroup(
             apartment="1 TENANT INT 1",
+            detail="Via Test 1",
             devices=[("ROOM A", 100.0), ("ROOM B", 200.0)],
             total=300.0,
         )
@@ -131,7 +132,7 @@ def test_has_two_sheets():
 
 
 def test_pivot_content():
-    """PIVOT sheet should contain correct groups and totals."""
+    """PIVOT sheet should contain detail header, groups and totals."""
     report, sorted_hca, pivot_groups = _make_report()
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -140,23 +141,38 @@ def test_pivot_content():
         wb = openpyxl.load_workbook(out)
         ws = wb["PIVOT "]
 
-        # Row 3: headers
+        # Row 3: column headers
         assert ws.cell(row=3, column=1).value == "Etichette di riga"
         assert ws.cell(row=3, column=2).value == "Somma di HCA"
 
-        # Row 4: apartment total
-        assert ws.cell(row=4, column=1).value == "1 TENANT INT 1"
-        assert ws.cell(row=4, column=2).value == 300
+        # Row 4: detail section header
+        assert ws.cell(row=4, column=1).value == "Via Test 1"
 
-        # Row 5-6: devices
-        assert ws.cell(row=5, column=1).value == "ROOM A"
-        assert ws.cell(row=5, column=2).value == 100
-        assert ws.cell(row=6, column=1).value == "ROOM B"
-        assert ws.cell(row=6, column=2).value == 200
+        # Row 5: apartment total
+        assert ws.cell(row=5, column=1).value == "1 TENANT INT 1"
+        assert ws.cell(row=5, column=2).value == 300
 
-        # Row 7: grand total
-        assert ws.cell(row=7, column=1).value == "Totale complessivo"
-        assert ws.cell(row=7, column=2).value == 300
+        # Row 6-7: devices
+        assert ws.cell(row=6, column=1).value == "ROOM A"
+        assert ws.cell(row=6, column=2).value == 100
+        assert ws.cell(row=7, column=1).value == "ROOM B"
+        assert ws.cell(row=7, column=2).value == 200
+
+        # Row 8: grand total
+        assert ws.cell(row=8, column=1).value == "Totale complessivo"
+        assert ws.cell(row=8, column=2).value == 300
+
+
+def test_pivot_detail_header_has_dark_fill():
+    """PIVOT detail section header rows should have dark blue background and bold white text."""
+    for wb in _write_test_workbook():
+        ws = wb["PIVOT "]
+        # Row 4 is the detail header in the fixture (one group, one detail)
+        cell = ws.cell(row=4, column=1)
+        assert cell.value == "Via Test 1"
+        assert cell.font.bold is True
+        assert cell.fill.start_color.rgb == "002F5496"
+        assert cell.font.color.rgb == "00FFFFFF"
 
 
 def test_raw_sheet_header():
@@ -219,7 +235,8 @@ def test_pivot_apartment_total_has_accent_fill():
     """PIVOT apartment total rows should be light blue and bold."""
     for wb in _write_test_workbook():
         ws = wb["PIVOT "]
-        cell = ws.cell(row=4, column=1)
+        # Row 4 is detail header, row 5 is the first apartment total
+        cell = ws.cell(row=5, column=1)
         assert cell.font.bold is True
         assert cell.fill.start_color.rgb == "00D6E4F0"
 

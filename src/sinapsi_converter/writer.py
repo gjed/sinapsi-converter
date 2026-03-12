@@ -294,8 +294,16 @@ def _write_pivot_sheet(ws, pivot_groups: list[PivotGroup]) -> None:
     current_row = 4
     grand_total = 0.0
     device_idx = 0  # running counter for alternating rows across all groups
+    current_detail: str | None = None
 
     for group in pivot_groups:
+        # Detail section header row — emitted whenever the detail value changes
+        if group.detail != current_detail:
+            current_detail = group.detail
+            ws.cell(row=current_row, column=1, value=group.detail)
+            apply_header_style(ws, row=current_row, max_col=max_col)
+            current_row += 1
+
         # Apartment subtotal row
         ws.cell(row=current_row, column=1, value=group.apartment)
         ws.cell(row=current_row, column=2, value=int(group.total))

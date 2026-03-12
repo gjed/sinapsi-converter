@@ -1,8 +1,7 @@
 """Sorting and grouping logic for the output sheets.
 
-Raw sheet: devices grouped by apartment (device_description), sorted by
-count within each group. Apartments ordered by their description string
-which starts with a number prefix (e.g. "1 GUERRESCHI INT 1 civ 7 ").
+Raw sheet: devices sorted by device_detail first, then device_description
+within each detail group.
 
 PIVOT sheet: alphabetical by device_description, then alphabetical by
 device name within each group.
@@ -16,9 +15,8 @@ from .models import HCADevice, PivotGroup
 def sort_for_raw_sheet(devices: list[HCADevice]) -> list[HCADevice]:
     """Sort HCA devices for the raw data sheet.
 
-    Groups by device_description, sorted by count within each group.
-    The group order follows the device_description string which naturally
-    sorts by apartment number and civico.
+    Sorts by device_detail first, then by device_description within each
+    detail group.
 
     Args:
         devices: Unsorted list of HCA devices.
@@ -26,7 +24,7 @@ def sort_for_raw_sheet(devices: list[HCADevice]) -> list[HCADevice]:
     Returns:
         Sorted list ready for the raw sheet.
     """
-    return sorted(devices, key=lambda d: (d.description, d.count))
+    return sorted(devices, key=lambda d: (d.detail, d.description))
 
 
 def build_pivot_groups(devices: list[HCADevice]) -> list[PivotGroup]:

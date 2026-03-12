@@ -5,7 +5,7 @@ from sinapsi_converter.sorter import build_pivot_groups, sort_for_raw_sheet
 
 
 def _make_device(
-    count: int, name: str, description: str, hca: float = 0.0
+    count: int, name: str, description: str, hca: float = 0.0, detail: str = ""
 ) -> HCADevice:
     """Create a minimal HCA device for testing."""
     return HCADevice(
@@ -14,7 +14,7 @@ def _make_device(
         serial_number="12345",
         name=name,
         description=description,
-        detail="",
+        detail=detail,
         measure_hex="",
         wired_wireless="",
         model_id="",
@@ -46,15 +46,15 @@ def test_sort_groups_by_description():
     ]
 
 
-def test_sort_by_count_within_group():
-    """Within a group, devices should be sorted by count."""
+def test_sort_by_description_within_same_detail():
+    """Within the same detail, devices should be sorted by description."""
     devices = [
-        _make_device(10, "Room B", "1 APT A"),
-        _make_device(3, "Room A", "1 APT A"),
-        _make_device(7, "Room C", "1 APT A"),
+        _make_device(1, "R", "3 APT C", detail="Scala A"),
+        _make_device(2, "R", "1 APT A", detail="Scala A"),
+        _make_device(3, "R", "2 APT B", detail="Scala A"),
     ]
     result = sort_for_raw_sheet(devices)
-    assert [d.count for d in result] == [3, 7, 10]
+    assert [d.description for d in result] == ["1 APT A", "2 APT B", "3 APT C"]
 
 
 def test_pivot_groups_alphabetical():
@@ -88,6 +88,32 @@ def test_pivot_totals():
     ]
     groups = build_pivot_groups(devices)
     assert groups[0].total == 30.0
+
+
+def test_sort_by_detail_then_description():
+    """Devices should be sorted first by detail, then by description."""
+    devices = [
+        _make_device(1, "R", "2 APT B", detail="Scala B"),
+        _make_device(2, "R", "1 APT A", detail="Scala B"),
+        _make_device(3, "R", "3 APT C", detail="Scala A"),
+    ]
+    result = sort_for_raw_sheet(devices)
+    assert [(d.detail, d.description) for d in result] == [
+        ("Scala A", "3 APT C"),
+        ("Scala B", "1 APT A"),
+        ("Scala B", "2 APT B"),
+    ]
+
+
+def test_sort_detail_primary_over_description():
+    """detail ordering takes priority over description ordering."""
+    devices = [
+        _make_device(1, "R", "1 APT A", detail="Z detail"),
+        _make_device(2, "R", "9 APT Z", detail="A detail"),
+    ]
+    result = sort_for_raw_sheet(devices)
+    assert result[0].detail == "A detail"
+    assert result[1].detail == "Z detail"
 
 
 def test_pivot_deduplicates_by_name():

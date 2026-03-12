@@ -276,6 +276,25 @@ def test_raw_freeze_panes():
         assert ws.freeze_panes is not None
 
 
+def test_raw_autofilter_has_sort_state():
+    """RAW sheet autofilter should have sort state on device_detail (col F) then device_description (col E)."""
+    for wb in _write_test_workbook():
+        ws = wb[wb.sheetnames[1]]
+        sort_state = ws.auto_filter.sortState
+        assert sort_state is not None, "autofilter has no sortState"
+        refs = [sc.ref for sc in sort_state.sortCondition]
+        # First sort key: column F (device_detail)
+        assert any(r.startswith("F") for r in refs), f"No sort on column F, got: {refs}"
+        # Second sort key: column E (device_description)
+        assert any(r.startswith("E") for r in refs), f"No sort on column E, got: {refs}"
+        # F must come before E
+        f_idx = next(i for i, r in enumerate(refs) if r.startswith("F"))
+        e_idx = next(i for i, r in enumerate(refs) if r.startswith("E"))
+        assert f_idx < e_idx, (
+            "device_detail (F) must be primary sort, device_description (E) secondary"
+        )
+
+
 def test_raw_columns_auto_fitted():
     """RAW sheet columns should have non-default widths (auto-fitted)."""
     for wb in _write_test_workbook():

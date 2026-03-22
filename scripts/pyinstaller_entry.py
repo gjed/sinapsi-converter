@@ -18,9 +18,13 @@ if __name__ == "__main__":
         # With --noconsole on Windows there is no console to print to,
         # so show a messagebox instead.
         try:
+            import tkinter as tk
             from tkinter import messagebox
 
+            root = tk.Tk()
+            root.withdraw()  # hide the empty root window
             messagebox.showerror("Sinapsi Converter", msg)
+            root.destroy()
         except Exception:
             # tkinter itself failed — last resort
             print(msg, file=sys.stderr)

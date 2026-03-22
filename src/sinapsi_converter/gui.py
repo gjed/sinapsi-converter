@@ -92,8 +92,8 @@ def _build_ui(root: tk.Tk, initial_path: str | None = None) -> None:
     tk.Button(frame_btn, text="Converti", command=convert, width=20).pack(pady=8)
 
     # -- Status bar --
-    frame_status = tk.Frame(root, padx=16, pady=(0, 12))
-    frame_status.pack(fill="x", side="bottom")
+    frame_status = tk.Frame(root, padx=16)
+    frame_status.pack(fill="x", side="bottom", pady=(0, 12))
 
     tk.Label(frame_status, textvariable=status_var, anchor="w", fg="gray").pack(
         fill="x"

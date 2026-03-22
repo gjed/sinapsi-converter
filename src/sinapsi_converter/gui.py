@@ -106,8 +106,8 @@ def _run_conversion(input_path: Path) -> Path:
 
 
 def _build_output_path(input_path: Path, report_filename: str) -> Path:
-    """Build the output XLSX path from the report filename."""
-    parts = report_filename.split("_")
+    """Build the output XLSX path from the input file name."""
+    parts = input_path.stem.split("_")
 
     building_code = "0000"
     for i, part in enumerate(parts):

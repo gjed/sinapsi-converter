@@ -86,21 +86,22 @@ def _get_input_path() -> Path | None:
 def _build_output_path(input_path: Path, report_filename: str) -> Path:
     """Build the output XLSX path.
 
-    Extracts the building code from the report filename and builds the
-    output name following the convention:
+    Extracts the building code and date from the **input file name** (not the
+    CSV-internal report_filename) and builds the output name following the
+    convention:
       MERC  LETTURE  <code>_<date>.xlsx
 
     The building code is the 4-digit number after "report_" in the filename.
     """
-    # Extract building code: "RAW_report_1703_2026-03-02_08-29" -> "1703"
-    parts = report_filename.split("_")
+    # Use the actual input filename, not the CSV-internal one
+    parts = input_path.stem.split("_")
     building_code = "0000"
     for i, part in enumerate(parts):
         if part == "report" and i + 1 < len(parts):
             building_code = parts[i + 1]
             break
 
-    # Extract date from report filename
+    # Extract date from input filename
     # "RAW_report_1703_2026-03-02_08-29" -> "2026-03-02"
     report_date = ""
     for part in parts:

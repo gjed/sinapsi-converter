@@ -3,18 +3,11 @@
 Supports three usage modes:
 1. Drag-and-drop: user drags a CSV file onto the .exe (Windows)
 2. CLI argument: `sinapsi-converter path/to/file.csv`
-3. Module execution: `python -m sinapsi_converter path/to/file.csv`
+3. GUI: double-click the .exe (no arguments) to open a tkinter window
+4. Module execution: `python -m sinapsi_converter [path/to/file.csv]`
 
 Output file is placed next to the input CSV with the naming convention:
   MERC  LETTURE  <building_code>_<date>.xlsx
-
-UI APPROACH NOTES (for future changes):
-  Currently uses drag-and-drop / CLI args. To switch to a different UI:
-  - Simple GUI: replace this file with a tkinter-based version that uses
-    a file dialog and a "Convert" button. All logic stays in parser/sorter/writer.
-  - File picker on double-click: replace sys.argv handling with
-    tkinter.filedialog.askopenfilename() when no args are provided.
-  The rest of the codebase (parser, sorter, writer, models) needs no changes.
 """
 
 from __future__ import annotations
@@ -28,10 +21,19 @@ from .writer import write_xlsx
 
 
 def main() -> None:
-    """Run the converter."""
+    """Run the converter.
+
+    With arguments: headless CLI / drag-and-drop mode.
+    Without arguments: launch the GUI window.
+    """
+    if len(sys.argv) < 2:
+        from .gui import launch_gui
+
+        launch_gui()
+        return
+
     input_path = _get_input_path()
     if input_path is None:
-        _show_usage()
         _wait_if_windows()
         sys.exit(1)
 
@@ -67,10 +69,8 @@ def _get_input_path() -> Path | None:
     """Get input CSV path from command-line arguments.
 
     Returns None if no valid path is provided.
+    Called only when sys.argv has at least 2 elements.
     """
-    if len(sys.argv) < 2:
-        return None
-
     path = Path(sys.argv[1])
     if not path.exists():
         print(f"File non trovato: {path}")
@@ -110,16 +110,6 @@ def _build_output_path(input_path: Path, report_filename: str) -> Path:
 
     output_name = f"MERC  LETTURE  {building_code}_{report_date}.xlsx"
     return input_path.parent / output_name
-
-
-def _show_usage() -> None:
-    """Print usage instructions."""
-    print("Sinapsi Converter - Converte report CSV in XLSX")
-    print()
-    print("Uso:")
-    print("  sinapsi-converter <file.csv>")
-    print()
-    print("Oppure trascina un file CSV sull'icona del programma.")
 
 
 def _wait_if_windows() -> None:

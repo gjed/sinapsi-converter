@@ -5,8 +5,8 @@ Converte i file CSV dei report Sinapsi (RAW_report) in file XLSX con tabella piv
 ## Uso su Windows (drag-and-drop)
 
 1. Trascinare il file CSV sull'icona di `sinapsi-converter.exe`
-2. Il file XLSX viene creato nella stessa cartella del CSV
-3. Il nome del file di output segue il formato: `MERC  LETTURE  <codice>_<data>.xlsx`
+1. Il file XLSX viene creato nella stessa cartella del CSV
+1. Il nome del file di output segue il formato: `MERC  LETTURE  <codice>_<data>.xlsx`
 
 ## Uso da riga di comando (Linux/Windows)
 
@@ -27,6 +27,7 @@ Il file XLSX contiene due fogli:
 ### Foglio PIVOT
 
 Riepilogo per appartamento:
+
 - Ogni appartamento ha una riga di totale e le righe dei singoli dispositivi
 - Colonna A: nome appartamento / dispositivo
 - Colonna B: valore HCA (somma per gli appartamenti)
@@ -35,6 +36,7 @@ Riepilogo per appartamento:
 ### Foglio dati grezzi
 
 Contiene tutti i dati del report originale:
+
 - Righe 1-2: intestazione del file (metadata del report)
 - Righe 4-8: dispositivi concentratori
 - Riga 9: sotto-intestazioni "Attuale" / "Es.Prec"

@@ -70,12 +70,12 @@ Currently: **drag-and-drop / CLI argument**.
 
 The UI is isolated in `__main__.py`. To change it:
 
-| Approach | What to change |
-|----------|---------------|
-| **Drag-and-drop** (current) | User drags CSV onto .exe. `sys.argv[1]` gets the path. |
-| **File picker dialog** | Replace `_get_input_path()` with `tkinter.filedialog.askopenfilename()`. Triggered when no args provided. |
-| **Simple GUI** | Replace `__main__.py` entirely with a tkinter window: Browse button + Convert button. Import `parser`, `sorter`, `writer` as-is. |
-| **Web UI** | Add a Flask/FastAPI wrapper. Import the same modules. |
+| Approach                    | What to change                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Drag-and-drop** (current) | User drags CSV onto .exe. `sys.argv[1]` gets the path.                                                                           |
+| **File picker dialog**      | Replace `_get_input_path()` with `tkinter.filedialog.askopenfilename()`. Triggered when no args provided.                        |
+| **Simple GUI**              | Replace `__main__.py` entirely with a tkinter window: Browse button + Convert button. Import `parser`, `sorter`, `writer` as-is. |
+| **Web UI**                  | Add a Flask/FastAPI wrapper. Import the same modules.                                                                            |
 
 No other module needs changes for any UI swap.
 
@@ -94,6 +94,7 @@ Row 4+: Repeating blocks of 3 rows per device:
 ```
 
 Devices come in two types:
+
 - **Concentrators**: 12 columns, no HCA data (serial starts with "RM")
 - **HCA devices**: 19 columns, includes heat cost allocator readings
 

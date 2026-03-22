@@ -46,7 +46,13 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Build binary
-        run: pyinstaller --onefile --paths src --name sinapsi-converter scripts/pyinstaller_entry.py
+        shell: bash
+        run: |
+          OPTS="--onefile --paths src --name sinapsi-converter"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            OPTS="$OPTS --noconsole"
+          fi
+          pyinstaller $OPTS scripts/pyinstaller_entry.py
 
       - name: Rename artifact
         shell: bash

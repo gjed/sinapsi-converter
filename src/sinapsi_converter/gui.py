@@ -18,18 +18,23 @@ _WINDOW_TITLE = "Sinapsi Converter"
 _WINDOW_SIZE = "500x200"
 
 
-def launch_gui() -> None:
-    """Create and run the main GUI window."""
+def launch_gui(initial_path: str | None = None) -> None:
+    """Create and run the main GUI window.
+
+    Args:
+        initial_path: If provided (e.g. from drag-and-drop), pre-fill the
+            file field and auto-start conversion.
+    """
     root = tk.Tk()
     root.title(_WINDOW_TITLE)
     root.geometry(_WINDOW_SIZE)
     root.resizable(False, False)
 
-    _build_ui(root)
+    _build_ui(root, initial_path=initial_path)
     root.mainloop()
 
 
-def _build_ui(root: tk.Tk) -> None:
+def _build_ui(root: tk.Tk, initial_path: str | None = None) -> None:
     """Build the GUI widgets."""
     # -- File selection row --
     frame_file = tk.Frame(root, padx=16, pady=12)
@@ -93,6 +98,11 @@ def _build_ui(root: tk.Tk) -> None:
     tk.Label(frame_status, textvariable=status_var, anchor="w", fg="gray").pack(
         fill="x"
     )
+
+    # -- Auto-convert if launched with a file (drag-and-drop) --
+    if initial_path:
+        file_var.set(initial_path)
+        root.after(100, convert)
 
 
 def _run_conversion(input_path: Path) -> Path:

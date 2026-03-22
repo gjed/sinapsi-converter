@@ -1,7 +1,7 @@
 """PyInstaller entry point.
 
 Thin wrapper that uses absolute imports (required for --onefile builds)
-and ensures the console stays open on Windows if anything goes wrong.
+and shows errors via messagebox on Windows (no console with --noconsole).
 """
 
 import sys
@@ -14,7 +14,14 @@ if __name__ == "__main__":
     except Exception:
         import traceback
 
-        traceback.print_exc()
-        if sys.platform == "win32":
-            input("\nPremi Invio per chiudere...")
+        msg = traceback.format_exc()
+        # With --noconsole on Windows there is no console to print to,
+        # so show a messagebox instead.
+        try:
+            from tkinter import messagebox
+
+            messagebox.showerror("Sinapsi Converter", msg)
+        except Exception:
+            # tkinter itself failed — last resort
+            print(msg, file=sys.stderr)
         sys.exit(1)
